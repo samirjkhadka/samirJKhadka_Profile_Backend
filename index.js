@@ -5,14 +5,15 @@ import cookieParser from "cookie-parser";
 import cloudinary from "cloudinary";
 import fileUpload from "express-fileupload";
 import cors from "cors";
+import { errorMiddleware } from "./middlewares/error.js";
+import router from "./routes/index.js";
 
 const app = express();
 
 //config
 dotenv.config();
 
-//database
-connectDB();
+
 
 //middleware
 app.use(express.json());
@@ -43,6 +44,11 @@ cloudinary.v2.config({
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+app.use(router);
+//database
+connectDB();
+app.use(errorMiddleware);
 
 app.get("/", (req, res) => {
   res.send("Samir J Khadka Profile API Is Running !");
