@@ -2,7 +2,8 @@ import express from "express";
 
 import { isAuthenticated } from "../middlewares/auth.js";
 import {
-  addProject,
+  addNewProject,
+  
   deleteProject,
   getAllProjects,
   getSingleProject,
@@ -11,10 +12,10 @@ import {
 
 const projectRouter = express.Router();
 
-projectRouter.post("/addProject", isAuthenticated, addProject);
+projectRouter.post("/addProject", isAuthenticated, addNewProject);
 projectRouter.delete("/deleteProject/:id", isAuthenticated, deleteProject);
 projectRouter.put("/updateProject/:id", isAuthenticated, updateProject);
-projectRouter.post("/getAllProjects", getAllProjects);
-projectRouter.post("/getSingleProject", getSingleProject);
+projectRouter.get("/getAllProjects", getAllProjects);
+projectRouter.get("/getSingleProject/:id", getSingleProject);
 
-export default userRouter;
+export default projectRouter;
