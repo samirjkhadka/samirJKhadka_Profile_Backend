@@ -4,8 +4,8 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import User from "../models/userModel.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
 import { generateToken } from "../utils/jwtToken.js";
+
 
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
@@ -20,30 +20,38 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
     const { avatar, resume } = req.files;
 
     //uploading avatar
+    if (
+      avatar.mimetype !== "image/png" &&
+      avatar.mimetype !== "image/jpeg" &&
+      avatar.mimetype !== "image/jpg"
+    ) {
+      return next(new ErrorHandler("Please Upload a valid image", 400));
+    }
     const cloudinaryResponseForAvatar = await cloudinary.uploader.upload(
       avatar.tempFilePath,
-      { folder: " Portfolio Avatar" }
+      { folder: "Portfolio_Avatar" }
     );
 
-    if (!cloudinaryResponseForAvatar || !cloudinaryResponseForAvatar.error) {
+
+    if (!cloudinaryResponseForAvatar || cloudinaryResponseForAvatar.error) {
       console.error(
         cloudinaryResponseForAvatar,
         cloudinaryResponseForAvatar.error || "Unknown Cloudinary error"
       );
-      return next(new ErrorHandler("Faild to upload avatar", 500));
+      return next(new ErrorHandler("Failed to upload avatar " + cloudinaryResponseForAvatar.error, 500));
     }
 
     //uploading resume
     const cloudinaryResponseForResume = await cloudinary.uploader.upload(
       resume.tempFilePath,
-      { folder: " Portfolio Resume" }
+      { folder: "Portfolio_Resume" }
     );
     if (!cloudinaryResponseForResume || cloudinaryResponseForResume.error) {
       console.error(
         "Cloudinary Errror: ",
         cloudinaryResponseForResume.error || "Unknown Cloudinary error"
       );
-      return next(new ErrorHandler("Faild to upload resume", 500));
+      return next(new ErrorHandler("Failed to upload resume", 500));
     }
 
     const {
@@ -60,7 +68,7 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
       linkedinURL,
     } = req.body;
 
-    const useDetail = await User.create({
+    const user = await User.create({
       fullName,
       email,
       phone,
@@ -126,7 +134,7 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
 export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id);
-    req.status(200).json({
+    res.status(200).json({
       success: true,
       user,
     });
@@ -157,7 +165,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
       const newProfileImage = await cloudinary.uploader.upload(
         avatar.tempFilePath,
         {
-          folder: " Portfolio Avatar",
+          folder: "Portfolio_Avatar",
         }
       );
       newUserData.avatar = {
@@ -175,7 +183,7 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
       }
 
       const newResume = await cloudinary.uploader.upload(resume.tempFilePath, {
-        folder: " Portfolio Resume",
+        folder: "Portfolio_Resume",
       });
 
       newUserData.resume = {
@@ -210,9 +218,12 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     const resetToken = user.getResetPasswordToken();
     await user.save({ validateBeforeSave: false });
 
-    const resetPasswordUrl = `$({process.env.FRONTEND_URL}/password/reset/${resetToken})`;
+    const resetPasswordUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
+
 
     const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
+
+
 
     try {
       await sendEmail({
@@ -266,6 +277,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 export const getUserForProfile = catchAsyncErrors(async (req, res, next) => {
   try {
     const id = req.params.id;
+    console.log(id);
 
     const user = await User.findById(id);
 

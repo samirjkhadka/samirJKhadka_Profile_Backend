@@ -1,7 +1,7 @@
-import ErrorHandler from "./error";
-import { catchAsyncErrors } from "./catchAsyncErrors";
+import ErrorHandler from "./error.js";
+import { catchAsyncErrors } from "./catchAsyncErrors.js";
 import jwt from "jsonwebtoken";
-import { User } from "../models/userModel.js";
+import userModel from "../models/userModel.js";
 
 export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
   const { token } = req.cookies;
@@ -12,7 +12,7 @@ export const isAuthenticated = catchAsyncErrors(async (req, res, next) => {
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-  req.user = await User.findById(decoded.id);
+  req.user = await userModel.findById(decoded.id);
 
   next();
 });
