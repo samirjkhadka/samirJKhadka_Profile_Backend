@@ -6,7 +6,6 @@ import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import { generateToken } from "../utils/jwtToken.js";
 
-
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
     if (!req.body.fullName || !req.body.email || !req.body.password) {
@@ -32,13 +31,17 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
       { folder: "Portfolio_Avatar" }
     );
 
-
     if (!cloudinaryResponseForAvatar || cloudinaryResponseForAvatar.error) {
       console.error(
         cloudinaryResponseForAvatar,
         cloudinaryResponseForAvatar.error || "Unknown Cloudinary error"
       );
-      return next(new ErrorHandler("Failed to upload avatar " + cloudinaryResponseForAvatar.error, 500));
+      return next(
+        new ErrorHandler(
+          "Failed to upload avatar " + cloudinaryResponseForAvatar.error,
+          500
+        )
+      );
     }
 
     //uploading resume
@@ -220,10 +223,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
     const resetPasswordUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
 
-
     const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
-
-
 
     try {
       await sendEmail({
@@ -276,8 +276,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 export const getUserForProfile = catchAsyncErrors(async (req, res, next) => {
   try {
-    const id = req.params.id;
-    console.log(id);
+    const id = "6784a9739f511216f74736b5";
 
     const user = await User.findById(id);
 
