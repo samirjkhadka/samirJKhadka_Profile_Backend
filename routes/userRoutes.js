@@ -18,7 +18,7 @@ userRouter.post("/registerUser", registerUser);
 userRouter.post("/login", loginUser);
 userRouter.get("/me", isAuthenticated, getUserDetails);
 userRouter.get("/logout", isAuthenticated, logoutUser);
-userRouter.get("/portfolio/me", getUserForProfile);
+userRouter.get("/portfolio/me/:id", getUserForProfile);
 userRouter.put("/password/update", isAuthenticated, updatePassword);
 userRouter.put("/me/profile/update", isAuthenticated, updateProfile);
 userRouter.post("/password/forgot", forgotPassword);

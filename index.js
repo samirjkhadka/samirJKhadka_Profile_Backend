@@ -29,6 +29,7 @@ const allowedOrigins = [
   "https://samirjkhadka-portfolio.netlify.app",
   "http://samirjkhadka-portfolio.netlify.app",
   "https://samirjkhadka.com.np",
+  "https://admin.samirjkhadka.com.np",
 ];
 
 app.use(

@@ -155,9 +155,9 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
       portfolioURL: req.body.portfolioURL,
       githubURL: req.body.githubURL,
       instagramURL: req.body.instagramURL,
-      twitterURL: req.body.twitterURL,
+      xURL: req.body.twitterURL,
       facebookURL: req.body.facebookURL,
-      linkedinURL: req.body.linkedinURL,
+      linkedInURL: req.body.linkedinURL,
     };
 
     if (req.files && req.files.avatar) {
@@ -178,16 +178,18 @@ export const updateProfile = catchAsyncErrors(async (req, res, next) => {
     }
 
     if (req.files && req.files.resume) {
-      const { resume } = req.files.resume;
+      const { resume } = req.files;
+   
       const user = await User.findById(req.user.id);
       const resumeFileId = user.resume.public_id;
       if (resumeFileId) {
         await cloudinary.uploader.destroy(resumeFileId);
       }
 
-      const newResume = await cloudinary.uploader.upload(resume.tempFilePath, {
-        folder: "Portfolio_Resume",
-      });
+      const newResume = await cloudinary.uploader.upload(
+        resume.tempFilePath,
+        { folder: "Portfolio_Resume" }
+      );
 
       newUserData.resume = {
         public_id: newResume.public_id,
